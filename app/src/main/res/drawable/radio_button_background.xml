@@ -1,0 +1,27 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+<item android:state_checked="true">
+  <vector
+      android:width="161dp"
+      android:height="52dp"
+      android:viewportWidth="161"
+      android:viewportHeight="52">
+    <path
+        android:pathData="M26,0L135,0A26,26 0,0 1,161 26L161,26A26,26 0,0 1,135 52L26,52A26,26 0,0 1,0 26L0,26A26,26 0,0 1,26 0z"
+        android:fillColor="@color/purple_app"/>
+
+  </vector>
+</item>
+<item>
+  <vector
+      android:width="161dp"
+      android:height="52dp"
+      android:viewportWidth="161"
+      android:viewportHeight="52">
+    <path
+        android:pathData="M26,0L135,0A26,26 0,0 1,161 26L161,26A26,26 0,0 1,135 52L26,52A26,26 0,0 1,0 26L0,26A26,26 0,0 1,26 0z"
+        android:fillColor="@color/off_radio"/>
+
+  </vector>
+
+</item>
+</selector>

@@ -4,4 +4,17 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="clot">Clot</string>
+    <string name="skip">Skip</string>
+    <string name="first_onboarding_high">Одежда, которая подчеркнет ваш <b><font color="#8E6CEF">уникальный</font></b> стиль</string>
+    <string name="next">Next</string>
+    <string name="first_onboarding_low">Ищете идеальную вещь? Фильтруйте предложения одним касанием. Добавляйте понравившиеся товары в избранное – мы сообщим вам о снижении цены.</string>
+    <string name="second_onboarding_high"><b><font color="#8E6CEF">Будьте в тренде с CLOT:</font></b> Эксклюзивная одежда и коллаборации.</string>
+    <string name="second_onboarding_low">Первыми узнавайте о новинках, лимитированных коллекциях и специальных предложениях от CLOT.</string>
+    <string name="men">Men</string>
+    <string name="women">Women</string>
+    <string name="tell_us_about_yourself">Tell us About yourself</string>
+    <string name="who_do_you_shop_for">Who do you shop for ?</string>
+    <string name="how_old_are_you">How Old are you ?</string>
+    <string name="age_range">Age Range</string>
+    <string name="finish">Finish</string>
 </resources>

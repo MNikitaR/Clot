@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="age_ranges">
+        <item>16-20</item>
+        <item>21-30</item>
+        <item>31-60</item>
+        <item>60+</item>
+    </string-array>
+</resources>
