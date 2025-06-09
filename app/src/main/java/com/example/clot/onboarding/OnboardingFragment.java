@@ -5,9 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -18,8 +16,6 @@ import com.example.clot.R;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
-import com.google.android.material.textfield.TextInputLayout;
 
 public class OnboardingFragment extends Fragment {
     private static final String ARG_POSITION = "position";
