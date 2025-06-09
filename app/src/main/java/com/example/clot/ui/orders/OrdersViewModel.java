@@ -1,16 +1,16 @@
-package com.example.clot.ui.dashboard;
+package com.example.clot.ui.orders;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class DashboardViewModel extends ViewModel {
+public class OrdersViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public DashboardViewModel() {
+    public OrdersViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is dashboard fragment");
+        mText.setValue("This is orders fragment");
     }
 
     public LiveData<String> getText() {

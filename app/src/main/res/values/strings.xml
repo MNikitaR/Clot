@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">Clot</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
+    <string name="title_orders">Orders</string>
     <string name="title_notifications">Notifications</string>
+    <string name="title_profile">Profile</string>
     <string name="clot">Clot</string>
     <string name="skip">Skip</string>
     <string name="first_onboarding_high">Одежда, которая подчеркнет ваш <b><font color="#8E6CEF">уникальный</font></b> стиль</string>
