@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <ImageButton
+        android:id="@+id/btnSignIn"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="20dp"
+        android:background="@color/white"
+        android:src="@drawable/arrow_back"/>
+
+    <!-- Заголовок -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/create_account"
+        android:textSize="35sp"
+        android:textColor="@color/black"
+        android:textStyle="bold"/>
+
+    <!-- Поля ввода -->
+    <EditText
+        android:id="@+id/etFirstName"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:padding="10dp"
+        android:layout_marginTop="30dp"
+        android:background="@color/gray"
+        android:hint="@string/firstname"/>
+
+    <EditText
+        android:id="@+id/etLastName"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:padding="10dp"
+        android:layout_marginTop="15dp"
+        android:background="@color/gray"
+        android:hint="@string/lastname"/>
+
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:padding="10dp"
+        android:layout_marginTop="15dp"
+        android:background="@color/gray"
+        android:hint="@string/email_address"
+        android:inputType="textEmailAddress"/>
+
+    <EditText
+        android:id="@+id/etPassword"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:padding="10dp"
+        android:layout_marginTop="15dp"
+        android:background="@color/gray"
+        android:hint="@string/password"
+        android:inputType="textPassword"/>
+
+    <!-- Кнопка регистрации -->
+    <Button
+        android:id="@+id/btnContinue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/contin"
+        android:layout_marginTop="30dp"
+        style="@style/PurpleButtonStyle"
+        android:enabled="false"/>
+
+    <!-- Ссылка на восстановление пароля -->
+    <TextView
+        android:id="@+id/tvForgotPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="@string/forgot_password_reset"/>
+
+</LinearLayout>

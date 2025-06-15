@@ -1,5 +1,6 @@
 package com.example.clot.view;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.example.clot.R;
@@ -34,5 +35,4 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
-
 }

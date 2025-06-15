@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_marginTop="80dp"
+    android:padding="24dp">
+
+    <!-- Заголовок -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_in"
+        android:textSize="35sp"
+        android:textColor="@color/black"
+        android:textStyle="bold"/>
+
+    <!-- Секция email (видна по умолчанию) -->
+    <LinearLayout
+        android:id="@+id/emailSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Поле Email -->
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="@string/email_address"
+            android:layout_marginTop="20dp"
+            android:padding="10dp"
+            android:layout_marginBottom="15dp"
+            android:background="@color/gray"
+            android:inputType="textEmailAddress"/>
+
+        <!-- Кнопка Continue -->
+        <Button
+            android:id="@+id/btnContinueEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/contin"
+            style="@style/PurpleButtonStyle"
+            android:enabled="false"/>
+
+        <!-- Ссылка на регистрацию -->
+        <TextView
+            android:id="@+id/tvCreateAccount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/dont_have_an_account"
+            android:layout_marginTop="5dp"
+            android:clickable="true"/>
+
+    </LinearLayout>
+
+    <!-- Социальные кнопки -->
+    <LinearLayout
+        android:id="@+id/socialLoginSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/btnApple"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            style="@style/GrayButtonStyle"
+            android:clickable="false"
+            android:padding="10dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="15dp"
+                android:adjustViewBounds="true"
+                android:maxHeight="30dp"
+                android:maxWidth="30dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/apple"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:text="@string/continue_with_apple"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btnGoogle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            style="@style/GrayButtonStyle"
+            android:clickable="false"
+            android:padding="10dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="15dp"
+                android:adjustViewBounds="true"
+                android:maxHeight="30dp"
+                android:maxWidth="30dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/google"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:text="@string/continue_with_google"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btnFacebook"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            style="@style/GrayButtonStyle"
+            android:clickable="false"
+            android:padding="10dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="15dp"
+                android:adjustViewBounds="true"
+                android:maxHeight="30dp"
+                android:maxWidth="30dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/facebook"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:text="@string/continue_with_facebook"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Секция пароля (скрыта по умолчанию) -->
+    <LinearLayout
+        android:id="@+id/passwordSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/password"
+            android:inputType="textPassword"/>
+
+        <Button
+            android:id="@+id/btnSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sign_in"
+            style="@style/PurpleButtonStyle"
+            android:enabled="false"/>
+
+        <TextView
+            android:id="@+id/tvForgotPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/forgot_password_reset"/>
+    </LinearLayout>
+
+</LinearLayout>

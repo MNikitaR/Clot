@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="off_radio">#F4F4F4</color>
     <color name="purple_app">#8D6CEE</color>
+    <color name="gray">#F4F4F4</color>
 </resources>

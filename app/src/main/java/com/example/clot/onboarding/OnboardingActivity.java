@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.clot.R;
-import com.example.clot.view.MainActivity;
+import com.example.clot.view.AuthActivity;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
 public class OnboardingActivity extends AppCompatActivity
@@ -58,7 +58,7 @@ public class OnboardingActivity extends AppCompatActivity
     public void onFinishClicked() {
 
         // Переходим к следующему шагу (авторизация или главный экран)
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, AuthActivity.class));
 
         finish();
     }
@@ -69,10 +69,5 @@ public class OnboardingActivity extends AppCompatActivity
         prefs.edit()
                 .putBoolean("onboarding_complete", true)
                 .apply();
-    }
-
-    private void startMainActivity() {
-        startActivity(new Intent(this, MainActivity.class));
-        finish();
     }
 }
