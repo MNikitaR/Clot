@@ -20,7 +20,7 @@
     <string name="finish">Finish</string>
     <string name="continue_with_facebook">Continue With Facebook</string>
     <string name="forgot_password_reset">Forgot Password ? <b><font color="#FF000000">Reset</font></b></string>
-    <string name="sign_in">Sign in</string>
+    <string name="sign_in">Sign In</string>
     <string name="password">Password</string>
     <string name="continue_with_google">Continue With Google</string>
     <string name="continue_with_apple">Continue With Apple</string>
@@ -34,4 +34,27 @@
     <string name="enter_email_address">Enter Email address</string>
     <string name="forgot_password">Forgot Password</string>
     <string name="return_to_login">Return to Login</string>
+    <string name="go">Go</string>
+    <string name="please_enter_your_pin_code">Please enter your\nPin Code</string>
+    <string name="set_up_pin">Set Up PIN</string>
+    <string name="invalid_pin">Invalid PIN. Try again</string>
+    <string name="pin_mismatch">PIN codes do not match</string>
+    <string name="continue_text">Continue</string>
+    <string name="confirm">Confirm</string>
+    <string name="create_new_pin">Create your new PIN code</string>
+    <string name="confirm_pin">Confirm your PIN code</string>
+    <string name="otp_verification">OTP Verification</string>
+    <string name="please_check_your_email">Please check your email </string>
+    <string name="to_see"> to see the verification code</string>
+    <string name="otp_code">OTP Code</string>
+    <string name="verify">Verify</string>
+    <string name="resend_code_to">Resend code to 1:50</string>
+    <string name="address">Address</string>
+    <string name="cart">Cart</string>
+    <string name="wishlist">Wishlist</string>
+    <string name="payment">Payment</string>
+    <string name="help">Help</string>
+    <string name="support">Support</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="edit">Edit</string>
 </resources>

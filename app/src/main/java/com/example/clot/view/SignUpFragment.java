@@ -1,6 +1,9 @@
 package com.example.clot.view;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -23,6 +26,7 @@ import com.example.clot.SupabaseClient;
 import com.example.clot.models.AuthResponse;
 import com.example.clot.models.LoginRequest;
 import com.example.clot.models.ProfileUpdate;
+import com.example.clot.pin.PinFragment;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -32,7 +36,7 @@ public class SignUpFragment extends Fragment {
     private EditText etFirstName, etLastName, etEmail, etPassword;
     private Button btnContinue;
     private ImageButton btnSignIn;
-    TextView tvForgotPassword;
+    private TextView tvForgotPassword;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -133,7 +137,12 @@ public class SignUpFragment extends Fragment {
             public void onResponse(String responseBody) {
                 requireActivity().runOnUiThread(() -> {
                     Log.e("updateProfile:onResponse", responseBody);
-                    startActivity(new Intent(getActivity(), MainActivity.class));
+
+                    // Сохраняем состояние в SplashActivity
+                    saveAuthStateInSplash();
+
+                    // Переходим к установке PIN
+                    navigateToPinFragment(PinFragment.MODE_SETUP, DataBinding.getUuidUser());
                 });
             }
         });
@@ -179,5 +188,22 @@ public class SignUpFragment extends Fragment {
                 .replace(R.id.fragment_container, new ForgotPasswordFragment())
                 .addToBackStack("forgot_password")
                 .commit();
+    }
+
+    private void saveAuthStateInSplash() {
+        SharedPreferences prefs = getActivity().getSharedPreferences("app_session", MODE_PRIVATE);
+        prefs.edit()
+                .putString("bearer_token", DataBinding.getBearerToken())
+                .putString("user_id", DataBinding.getUuidUser())
+                .apply();
+    }
+
+    private void navigateToPinFragment(int mode, String userId) {
+        Intent intent = new Intent(requireActivity(), AuthActivity.class);
+        intent.putExtra("fragment", "pin");
+        intent.putExtra("mode", mode);
+        intent.putExtra("user_id", userId);
+        startActivity(intent);
+        requireActivity().finish();
     }
 }

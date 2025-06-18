@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp"
+    android:background="#FFFFFF">
+
+    <ImageButton
+        android:id="@+id/btnSignIn"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="20dp"
+        android:background="@color/white"
+        android:layout_gravity="left"
+        android:src="@drawable/arrow_back"/>
+
+    <!-- Заголовок Log In -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_in"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"
+        android:textColor="@color/black"/>
+
+    <!-- Подзаголовок -->
+    <TextView
+        android:id="@+id/tvSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/please_enter_your_pin_code"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:layout_marginBottom="32dp"
+        android:textColor="#666666"/>
+
+    <!-- Индикаторы ввода пин-кода -->
+    <LinearLayout
+        android:id="@+id/pinIndicators"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="20dp">
+
+        <!-- Кружки будут добавляться динамически -->
+    </LinearLayout>
+
+    <!-- Контейнер для клавиатуры -->
+    <GridLayout
+        android:id="@+id/gridLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnCount="3"
+        android:useDefaultMargins="true"
+        android:rowCount="4">
+
+        <Button
+            android:id="@+id/btn1"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            style="@style/PinButton"
+            android:text="1"/>
+
+        <Button
+            android:id="@+id/btn2"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            style="@style/PinButton"
+            android:text="2"/>
+
+        <Button
+            android:id="@+id/btn3"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            style="@style/PinButton"
+            android:text="3"/>
+
+        <Button
+            android:id="@+id/btn4"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            style="@style/PinButton"
+            android:text="4"/>
+
+        <Button
+            android:id="@+id/btn5"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            style="@style/PinButton"
+            android:text="5"/>
+
+        <Button
+            android:id="@+id/btn6"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            style="@style/PinButton"
+            android:text="6"/>
+
+        <Button
+            android:id="@+id/btn7"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            style="@style/PinButton"
+            android:text="7"/>
+
+        <Button
+            android:id="@+id/btn8"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            style="@style/PinButton"
+            android:text="8"/>
+
+        <Button
+            android:id="@+id/btn9"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            style="@style/PinButton"
+            android:text="9"/>
+
+        <!-- Кнопка clear -->
+        <Button
+            android:id="@+id/btn_clear"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            style="@style/PinButton"
+            android:text="C"/>
+
+        <Button
+            android:id="@+id/btn0"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            style="@style/PinButton"
+            android:text="0"/>
+
+        <!-- Кнопка удаления -->
+        <Button
+            android:id="@+id/btn_delete"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            style="@style/PinButton"
+            android:text="⌫"/>
+    </GridLayout>
+
+    <!-- Кнопка Go -->
+    <Button
+        android:id="@+id/btnGo"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/go"
+        style="@style/PurpleButtonStyle"
+        android:layout_marginTop="24dp"/>
+</LinearLayout>

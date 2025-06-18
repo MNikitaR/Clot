@@ -1,6 +1,9 @@
 package com.example.clot.view;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -20,6 +23,7 @@ import com.example.clot.R;
 import com.example.clot.SupabaseClient;
 import com.example.clot.models.AuthResponse;
 import com.example.clot.models.LoginRequest;
+import com.example.clot.pin.PinFragment;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -142,7 +146,12 @@ public class SignInFragment extends Fragment {
                     DataBinding.saveBearerToken("Bearer " + auth.getAccess_token());
                     DataBinding.saveUuidUser(auth.getUser().getId());
 
-                    startActivity(new Intent(getActivity(), MainActivity.class));
+                    // Сохраняем состояние в SplashActivity
+                    saveAuthStateInSplash();
+
+                    // Переходим к установке PIN
+                    navigateToPinFragment(PinFragment.MODE_SETUP, auth.getUser().getId());
+
                     Log.e("performLogin:onResponse", auth.getUser().getId());
                 });
             }
@@ -161,5 +170,22 @@ public class SignInFragment extends Fragment {
                 .replace(R.id.fragment_container, new ForgotPasswordFragment())
                 .addToBackStack("forgot_password")
                 .commit();
+    }
+
+    private void saveAuthStateInSplash() {
+        SharedPreferences prefs = getActivity().getSharedPreferences("app_session", MODE_PRIVATE);
+        prefs.edit()
+                .putString("bearer_token", DataBinding.getBearerToken())
+                .putString("user_id", DataBinding.getUuidUser())
+                .apply();
+    }
+
+    private void navigateToPinFragment(int mode, String userId) {
+        Intent intent = new Intent(requireActivity(), AuthActivity.class);
+        intent.putExtra("fragment", "pin");
+        intent.putExtra("mode", mode);
+        intent.putExtra("user_id", userId);
+        startActivity(intent);
+        requireActivity().finish();
     }
 }
