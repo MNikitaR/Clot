@@ -26,7 +26,38 @@
     <fragment
         android:id="@+id/navigation_profile"
         android:name="com.example.clot.ui.profile.ProfileFragment"
-        android:label="@string/title_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile"
+        android:label="@string/title_profile">
+        <action
+            android:id="@+id/action_profileFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
+    </fragment>
+
+    <!-- Экран редактирования профиля -->
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.example.clot.ui.profile.EditProfileFragment"
+        tools:layout="@layout/fragment_edit_profile"
+        android:label="@string/edit_profile">
+
+        <!-- Аргументы -->
+        <argument
+            android:name="username"
+            app:argType="string" />
+        <argument
+            android:name="email"
+            app:argType="string" />
+        <argument
+            android:name="phone"
+            app:argType="string" />
+
+<!--        &lt;!&ndash; Действия &ndash;&gt;
+        <action
+            android:id="@+id/action_editProfileFragment_to_changePinFragment"
+            app:destination="@id/changePinFragment" />
+        <action
+            android:id="@+id/action_editProfileFragment_to_changePasswordFragment"
+            app:destination="@id/changePasswordFragment" />-->
+    </fragment>
 
 </navigation>

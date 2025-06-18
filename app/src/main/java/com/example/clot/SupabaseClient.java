@@ -27,11 +27,12 @@ public class SupabaseClient {
         public void onResponse(String responseBody);
     }
 
-    public static String DOMAIN_NAME = "https://vhvygctsmcdqkfgflchf.supabase.co/";
+    public static String DOMAIN_NAME = "https://iexkqvbyaqdhburzqphy.supabase.co/";
     public static String AUTH_PATH = "auth/v1/";
     public static String REST_PATH = "rest/v1/";
-    public static String API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZodnlnY3RzbWNkcWtmZ2ZsY2hmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwMTUxNjIsImV4cCI6MjA2NDU5MTE2Mn0.C_VaBGTogftuvzliwRUIY9HUQgxZTdR02PBqbeX49hU";
+    public static String API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlleGtxdmJ5YXFkaGJ1cnpxcGh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyMzY0MjIsImV4cCI6MjA2NTgxMjQyMn0.0HuekEOytqhI7Lj1JytIeUFAuV4ogx_Fk2FH8sDogD0";
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    public static final String STORAGE_AVATAR = DOMAIN_NAME + "storage/v1/object/public/avatars/";
 
     OkHttpClient client = new OkHttpClient();
     private final Gson gson = new Gson();
@@ -199,6 +200,63 @@ public class SupabaseClient {
             }
         });
     }
+
+    // Получение данных пользователя
+    public void getData(SBC_Callback callback) {
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + REST_PATH + "user_profile?user_id=eq." + DataBinding.getUuidUser())
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", DataBinding.getBearerToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    callback.onResponse(responseBody);
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера " + response));
+                }
+            }
+        });
+    }
+
+    /*// Метод для обновления профиля пользователя
+    public void updateUserProfile(String userId, String jsonPayload, SBC_Callback callback) {
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, jsonPayload);
+
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + REST_PATH + "user_profiles?user_id=eq." + userId)
+                .patch(body)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", DataBinding.getBearerToken())
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=minimal")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse("Profile updated");
+                } else {
+                    callback.onFailure(new IOException("Update failed: " + response.code()));
+                }
+            }
+        });
+    }*/
 
    /* // Проверка OTP
     public void verifyOtp(String email, String token, final SBC_Callback callback) {
