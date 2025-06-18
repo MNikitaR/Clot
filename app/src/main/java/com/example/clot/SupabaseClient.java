@@ -3,8 +3,12 @@ package com.example.clot;
 import androidx.annotation.NonNull;
 
 import com.example.clot.models.LoginRequest;
+import com.example.clot.models.OTPRequest;
 import com.example.clot.models.ProfileUpdate;
 import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -35,7 +39,6 @@ public class SupabaseClient {
     // Авторизация пользователя
     public void loginUser(LoginRequest loginRequest, SBC_Callback callback) {
         MediaType mediaType = MediaType.parse("application/json");
-        Gson gson = new Gson();
         String json = gson.toJson(loginRequest);
         RequestBody body = RequestBody.create(json, mediaType);
         Request request = new Request.Builder()
@@ -66,7 +69,6 @@ public class SupabaseClient {
     // Регистрация пользователя
     public void signUpUser(LoginRequest loginRequest, SBC_Callback callback) {
         MediaType mediaType = MediaType.parse("application/json");
-        Gson gson = new Gson();
         String json = gson.toJson(loginRequest);
         RequestBody body = RequestBody.create(json, mediaType);
         Request request = new Request.Builder()
@@ -96,7 +98,6 @@ public class SupabaseClient {
 
     public void updateProfile(ProfileUpdate profile, SBC_Callback callback) {
         MediaType mediaType = MediaType.parse("application/json");
-        Gson gson = new Gson();
         String json = gson.toJson(profile);
         RequestBody body = RequestBody.create(json, mediaType);
         Request request = new Request.Builder()
@@ -124,4 +125,147 @@ public class SupabaseClient {
             }
         });
     }
+
+    // Отправка OTP
+    public void sendOtp(String email, final SBC_Callback callback) {
+        JSONObject payload = new JSONObject();
+        try {
+            payload.put("email", email);
+        } catch (Exception e) {
+            callback.onFailure(new IOException("Error creating data: " + e.getMessage()));
+            return;
+        }
+
+        RequestBody body = RequestBody.create(JSON, payload.toString());
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + AUTH_PATH + "recover")
+                .post(body)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    callback.onResponse(responseBody);
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера " + response));
+                }
+            }
+        });
+    }
+
+    public void resetPasswordWithOTP(String email, String token, String newPassword, SBC_Callback callback) {
+        JSONObject payload = new JSONObject();
+        try {
+            payload.put("email", email);
+            payload.put("token", token);
+            payload.put("type", "recovery");
+            payload.put("password", newPassword);
+        } catch (JSONException e) {
+            callback.onFailure(new IOException("JSON error: " + e.getMessage()));
+            return;
+        }
+
+        RequestBody body = RequestBody.create(JSON, payload.toString());
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + AUTH_PATH + "verify")
+                .put(body)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse("Password updated successfully");
+                } else {
+                    String errorBody = response.body().string();
+                    callback.onFailure(new IOException("Error " + response.code() + ": " + errorBody));
+                }
+            }
+        });
+    }
+
+   /* // Проверка OTP
+    public void verifyOtp(String email, String token, final SBC_Callback callback) {
+        JSONObject payload = new JSONObject();
+        try {
+            payload.put("email", email);
+            payload.put("token", token);
+            payload.put("type", "recovery");
+        } catch (Exception e) {
+            callback.onFailure(new IOException("Ошибка формирования данных: " + e.getMessage()));
+            return;
+        }
+
+        RequestBody body = RequestBody.create(JSON, payload.toString());
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + AUTH_PATH + "verify")
+                .post(body)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    callback.onResponse(responseBody);
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера " + response));
+                }
+            }
+        });
+    }
+
+    // Обновление пароля
+    public void updatePassword(OTPRequest otpRequest, SBC_Callback callback) {
+        MediaType mediaType = MediaType.parse("application/json");
+        String json = gson.toJson(otpRequest);
+        RequestBody body = RequestBody.create(json, mediaType);
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + AUTH_PATH + "user")
+                .method("PUT", body)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", DataBinding.getBearerToken())
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    callback.onResponse(responseBody);
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера " + response));
+                }
+            }
+        });
+    }*/
 }
