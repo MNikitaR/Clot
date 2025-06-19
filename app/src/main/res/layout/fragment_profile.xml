@@ -116,6 +116,7 @@
                 android:layout_height="wrap_content"
                 android:drawableEnd="@drawable/arrowright"
                 android:text="@string/help"
+                android:enabled="false"
                 android:textAlignment="textStart" />
 
             <Button
@@ -125,6 +126,7 @@
                 android:text="@string/support"
                 android:textAlignment="textStart"
                 style="@style/btnProfile"
+                android:enabled="false"
                 android:drawableEnd="@drawable/arrowright"/>
 
         </LinearLayout>

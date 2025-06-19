@@ -4,7 +4,6 @@ public class Profile{
     private String id;
     private String username;
     private String email;
-    private String phone;
     private String avatar_url;
     private String address;
 
@@ -46,13 +45,5 @@ public class Profile{
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 }

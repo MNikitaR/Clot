@@ -1,6 +1,7 @@
 package com.example.clot.ui.profile;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +21,7 @@ import com.bumptech.glide.Glide;
 import com.example.clot.R;
 import com.example.clot.SupabaseClient;
 import com.example.clot.models.Profile;
+import com.example.clot.view.AuthActivity;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -120,22 +122,24 @@ public class ProfileFragment extends Fragment {
 
     private void setupClickListeners(View view) {
 
+        // Меню профиля
         btnEditProfile.setOnClickListener(v -> navigateToEditProfile());
+        view.findViewById(R.id.btnAddress).setOnClickListener(v -> {
+            // Переход к редактору адресов
+            NavHostFragment.findNavController(ProfileFragment.this)
+                    .navigate(R.id.action_profileFragment_to_addressFragment);
+        });
+        view.findViewById(R.id.btnPayment).setOnClickListener(v -> {
+            NavHostFragment.findNavController(ProfileFragment.this)
+                    .navigate(R.id.action_profileFragment_to_paymentMethods);
+        });
 
-        /*// Кнопка выхода
+        //Кнопка выхода
         btnSignOut.setOnClickListener(v -> signOutUser());
 
-        // Меню профиля
-        view.findViewById(R.id.btnAddress).setOnClickListener(v -> navigateTo(AddressFragment.class));
+        /*
         view.findViewById(R.id.btnCart).setOnClickListener(v -> navigateTo(CartFragment.class));
-        view.findViewById(R.id.btnWishlist).setOnClickListener(v -> navigateTo(WishlistFragment.class));
-        view.findViewById(R.id.btnPayment).setOnClickListener(v -> navigateTo(PaymentFragment.class));*/
-    }
-
-    // Метод для обновления UI после редактирования
-    public void updateProfileData(String username, String email) {
-        tvUserName.setText(username);
-        tvUserEmail.setText(email);
+        view.findViewById(R.id.btnWishlist).setOnClickListener(v -> navigateTo(WishlistFragment.class));*/
     }
 
     // Обработка обратного вызова
@@ -146,18 +150,6 @@ public class ProfileFragment extends Fragment {
         SharedPreferences prefs = requireActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE);
         tvUserName.setText(prefs.getString("username", ""));
         tvUserEmail.setText(prefs.getString("email", ""));
-    }
-
-    private void navigateTo(Class<? extends Fragment> fragmentClass) {
-        try {
-            Fragment fragment = fragmentClass.newInstance();
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void navigateToEditProfile() {
@@ -173,9 +165,51 @@ public class ProfileFragment extends Fragment {
                 .navigate(R.id.action_profileFragment_to_editProfileFragment, args);
     }
 
-/*    private void signOutUser() {
-        SupabaseClient.getInstance().signOut();
+  private void signOutUser() {
+      // Получаем access token из SharedPreferences
+      SharedPreferences prefs = requireActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE);
+      String accessToken = prefs.getString("access_token", null);
+
+      if (accessToken == null) {
+          // Если токена нет, просто переходим на экран авторизации
+          navigateToAuth();
+          return;
+      }
+
+      SupabaseClient supabaseClient = new SupabaseClient();
+      supabaseClient.signOut(accessToken, new SupabaseClient.SBC_Callback() {
+          @Override
+          public void onFailure(IOException e) {
+              requireActivity().runOnUiThread(() -> {
+                  Log.e("SignOut", "Sign out failed: " + e.getMessage());
+                  // Все равно очищаем данные и переходим на экран авторизации
+                  navigateToAuth();
+              });
+          }
+
+          @Override
+          public void onResponse(String responseBody) {
+              requireActivity().runOnUiThread(() -> {
+                  Log.d("SignOut", "Sign out successful");
+                  navigateToAuth();
+              });
+          }
+      });
+  }
+
+    private void navigateToAuth() {
+        // Очищаем данные пользователя
+        clearUserData();
+
+        // Переходим на экран авторизации
         startActivity(new Intent(getActivity(), AuthActivity.class));
         requireActivity().finish();
-    }*/
+    }
+
+    private void clearUserData() {
+        SharedPreferences prefs = requireActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.clear();
+        editor.apply();
+    }
 }

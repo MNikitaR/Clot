@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="15dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:id="@+id/tvDefault"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        style="@style/btnProfile"
+        android:padding="16dp">
+
+        <!-- Адрес -->
+
+            <TextView
+                android:id="@+id/tvAddress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="2715 Ash Dr. San Jose, South Dakota 83475"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:lineSpacingExtra="4dp"
+                android:maxLines="2"
+                android:ellipsize="end"/>
+
+
+        <!-- Кнопка редактирования -->
+        <Button
+            android:id="@+id/btnEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/edit"
+            android:layout_gravity="end"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:background="@android:color/transparent"
+            android:textColor="@color/purple_app"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

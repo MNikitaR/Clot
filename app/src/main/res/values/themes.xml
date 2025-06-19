@@ -69,4 +69,16 @@
         <item name="textAllCaps">false</item>
         <item name="android:layout_margin">5dp</item>
     </style>
+    <style name="PasswordInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/purple_200</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxCornerRadiusBottomEnd">8dp</item>
+        <item name="boxCornerRadiusBottomStart">8dp</item>
+        <item name="boxCornerRadiusTopEnd">8dp</item>
+        <item name="boxCornerRadiusTopStart">8dp</item>
+        <item name="hintTextColor">@color/purple_200</item>
+    </style>
+    <style name="RoundedDialog" parent="Theme.MaterialComponents.Dialog">
+        <item name="dialogCornerRadius">16dp</item>
+    </style>
 </resources>

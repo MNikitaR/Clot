@@ -31,6 +31,14 @@
         <action
             android:id="@+id/action_profileFragment_to_editProfileFragment"
             app:destination="@id/editProfileFragment" />
+
+        <action
+            android:id="@+id/action_profileFragment_to_addressFragment"
+            app:destination="@id/addressFragment" />
+
+        <action
+            android:id="@+id/action_profileFragment_to_paymentMethods"
+            app:destination="@id/paymentMethodFragment" />
     </fragment>
 
     <!-- Экран редактирования профиля -->
@@ -39,25 +47,50 @@
         android:name="com.example.clot.ui.profile.EditProfileFragment"
         tools:layout="@layout/fragment_edit_profile"
         android:label="@string/edit_profile">
-
-        <!-- Аргументы -->
-        <argument
-            android:name="username"
-            app:argType="string" />
-        <argument
-            android:name="email"
-            app:argType="string" />
-        <argument
-            android:name="phone"
-            app:argType="string" />
-
-<!--        &lt;!&ndash; Действия &ndash;&gt;
         <action
             android:id="@+id/action_editProfileFragment_to_changePinFragment"
             app:destination="@id/changePinFragment" />
-        <action
-            android:id="@+id/action_editProfileFragment_to_changePasswordFragment"
-            app:destination="@id/changePasswordFragment" />-->
     </fragment>
+
+    <!-- Экран изменения пин-кода -->
+    <fragment
+        android:id="@+id/changePinFragment"
+        android:name="com.example.clot.ui.profile.ChangePinFragment"
+        tools:layout="@layout/fragment_change_pin"
+        android:label="@string/change_pin"/>
+
+    <!-- Экран отображения адресов -->
+    <fragment
+        android:id="@+id/addressFragment"
+        android:name="com.example.clot.ui.profile.address.AddressFragment"
+        tools:layout="@layout/fragment_address_list">
+        <action
+            android:id="@+id/action_addressListFragment_to_addressEditFragment"
+            app:destination="@id/addressEditFragment">
+        </action>
+    </fragment>
+
+    <!-- Экран изменения адресов -->
+    <fragment
+        android:id="@+id/addressEditFragment"
+        android:name="com.example.clot.ui.profile.address.AddressEditFragment"
+        tools:layout="@layout/fragment_address_edit"/>
+
+    <!-- Экран отображения методов оплаты -->
+    <fragment
+        android:id="@+id/paymentMethodFragment"
+        android:name="com.example.clot.ui.profile.paymentmethod.PaymentMethodListFragment"
+        tools:layout="@layout/fragment_payment_method_list">
+        <action
+            android:id="@+id/action_paymentMethodListFragment_to_paymentEditFragment"
+            app:destination="@id/paymentEditFragment">
+        </action>
+    </fragment>
+
+    <!-- Экран изменения метода оплаты -->
+    <fragment
+        android:id="@+id/paymentEditFragment"
+        android:name="com.example.clot.ui.profile.paymentmethod.PaymentMethodEditFragment"
+        tools:layout="@layout/fragment_payment_method_edit"/>
 
 </navigation>

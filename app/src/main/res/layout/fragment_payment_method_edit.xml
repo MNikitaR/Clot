@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Заголовок -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="24dp">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/arrow_back" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/details_payment_method"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <!-- Номер карты -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilCardNumber"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:hintTextColor="@color/gray">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etCardNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/card_number"
+                android:inputType="number"
+                android:maxLength="19"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Держатель карты -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilCardholder"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:hintTextColor="@color/gray">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etCardholder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/cardholder_name"
+                android:inputType="textCapWords"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Срок действия и CVV -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+
+            <!-- Срок действия - Месяц -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilExpiryMonth"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                app:hintTextColor="@color/gray">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etExpiryMonth"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/month"
+                    android:inputType="number"
+                    android:maxLength="2"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Разделитель -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="/"
+                android:textSize="24sp"
+                android:textColor="@color/black"
+                android:layout_gravity="center_vertical"
+                android:paddingTop="16dp"/>
+
+            <!-- Срок действия - Год -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilExpiryYear"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                app:hintTextColor="@color/gray">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etExpiryYear"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/year"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:imeOptions="actionNext"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- CVV -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilCvv"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                app:hintTextColor="@color/gray">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etCvv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/cvv"
+                    android:inputType="numberPassword"
+                    android:maxLength="4"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <!-- По умолчанию -->
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cbDefault"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/set_as_default_payment_method"
+            android:textSize="16sp"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Кнопка сохранения -->
+        <Button
+            android:id="@+id/btnSavePaymentMethod"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="@string/save_payment_method"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textAllCaps="true"
+            app:cornerRadius="8dp"
+            app:backgroundTint="@color/purple_500"/>
+
+    </LinearLayout>
+</ScrollView>

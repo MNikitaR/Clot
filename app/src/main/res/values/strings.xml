@@ -69,4 +69,27 @@
     <string name="change_password">Change Password</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="save_changes">Save Changes</string>
+    <string name="current_pin">Current PIN</string>
+    <string name="new_pin">New PIN</string>
+    <string name="current_password">Current Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_new_password">Confirm New Password</string>
+    <string name="edit_address">Edit Address</string>
+    <string name="set_as_default_address">Set as default address</string>
+    <string name="zip_code">Zip Code</string>
+    <string name="state">State</string>
+    <string name="city">City</string>
+    <string name="street_address">Street Address</string>
+    <string name="def">DEFAULT</string>
+    <string name="payment_methods">Payment Methods</string>
+    <string name="details_payment_method">Payment Method Details</string>
+    <string name="cardholder_name">Cardholder Name</string>
+    <string name="card_number">Card Number</string>
+    <string name="mm_yy">MM/YY</string>
+    <string name="cvv">CVV</string>
+    <string name="details">Details</string>
+    <string name="save_payment_method">SAVE PAYMENT METHOD</string>
+    <string name="set_as_default_payment_method">Set as default payment method</string>
+    <string name="month">Month</string>
+    <string name="year">Year</string>
 </resources>

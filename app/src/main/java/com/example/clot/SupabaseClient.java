@@ -1,15 +1,21 @@
 package com.example.clot;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
+import com.example.clot.models.Address;
 import com.example.clot.models.LoginRequest;
-import com.example.clot.models.OTPRequest;
+import com.example.clot.models.PaymentMethod;
+import com.example.clot.models.Profile;
 import com.example.clot.models.ProfileUpdate;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -34,7 +40,7 @@ public class SupabaseClient {
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     public static final String STORAGE_AVATAR = DOMAIN_NAME + "storage/v1/object/public/avatars/";
 
-    OkHttpClient client = new OkHttpClient();
+    static OkHttpClient client = new OkHttpClient();
     private final Gson gson = new Gson();
 
     // Авторизация пользователя
@@ -226,6 +232,492 @@ public class SupabaseClient {
             }
         });
     }
+
+    // Метод для загрузки аватарки
+    public static void uploadAvatar(File file, String fileName, SBC_Callback callback) {
+        try {
+            MediaType mediaType = MediaType.parse("image/jpeg");
+            RequestBody body = RequestBody.create(mediaType, file);
+
+            Request request = new Request.Builder()
+                    .url(STORAGE_AVATAR + fileName)
+                    .put(body)
+                    .addHeader("apikey", API_KEY)
+                    .addHeader("Authorization", "Bearer " + DataBinding.getBearerToken())
+                    .addHeader("Content-Type", "image/jpeg")
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    callback.onFailure(e);
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        callback.onResponse("Avatar uploaded");
+                    } else {
+                        String errorBody = response.body().string();
+                        String errorMessage = parseStorageError(errorBody);
+                        callback.onFailure(new IOException(errorMessage));
+                    }
+                }
+            });
+        } catch (Exception e) {
+            callback.onFailure(new IOException("File error: " + e.getMessage()));
+        }
+    }
+
+    private static String parseStorageError(String errorBody) {
+        try {
+            JSONObject errorJson = new JSONObject(errorBody);
+            return errorJson.optString("message", "Upload failed");
+        } catch (JSONException e) {
+            return "Upload error: " + errorBody;
+        }
+    }
+
+    // Метод для удаления аватарки
+    public static void deleteAvatar(String fileName, SBC_Callback callback) {
+        Request request = new Request.Builder()
+                .url(STORAGE_AVATAR + fileName)
+                .delete()
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + DataBinding.getBearerToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse("Avatar deleted");
+                } else {
+                    callback.onFailure(new IOException("Delete failed: " + response.code()));
+                }
+            }
+        });
+    }
+
+    public static void updateURL(String jsonPayload, SBC_Callback callback) {
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, jsonPayload);
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + REST_PATH + "profiles?id=eq." + DataBinding.getUuidUser())
+                .method("PATCH", body)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", DataBinding.getBearerToken())
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=minimal")
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    callback.onResponse(responseBody);
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера " + response));
+                }
+            }
+        });
+    }
+
+    // Метод смены пароля
+    public void updatePassword( String newPassword, SBC_Callback callback) {
+        // Создаем объект запроса
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, newPassword);
+
+        // Формируем HTTP-запрос
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + AUTH_PATH + "user")
+                .method("PUT", body)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", DataBinding.getBearerToken())
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        // Выполняем запрос асинхронно
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    callback.onResponse(responseBody);
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера " + response));
+                }
+            }
+        });
+    }
+
+    // Метод для восстановления пароля
+    public void resetPassword(String email, SBC_Callback callback) {
+        String json = "{\"email\":\"" + email + "\"}";
+        RequestBody body = RequestBody.create(json, JSON);
+
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + AUTH_PATH + "recover")
+                .method("POST", body)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    callback.onResponse(responseBody);
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера " + response));
+                }
+            }
+        });
+    }
+
+    public void getUserAddresses(SBC_Callback callback) {
+        String userId = DataBinding.getUuidUser();
+        String url = DOMAIN_NAME + "/rest/v1/addresses?user_id=eq." + userId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .header("apikey", API_KEY)
+                .header("Authorization", DataBinding.getBearerToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    callback.onResponse(responseBody);
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера " + response));
+                }
+            }
+        });
+    }
+
+    public void saveAddress(Address address, SBC_Callback callback) {
+        String url;
+        String method;
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("user_id", DataBinding.getUuidUser());
+            jsonBody.put("street", address.getStreet());
+            jsonBody.put("city", address.getCity());
+            jsonBody.put("state", address.getState());
+            jsonBody.put("zip_code", address.getZipCode());
+            jsonBody.put("is_default", address.isDefault());
+
+            if (address.getId() != null && !address.getId().isEmpty()) {
+                url = DOMAIN_NAME + "/rest/v1/addresses?id=eq." + address.getId();
+                method = "PATCH";
+            } else {
+                url = DOMAIN_NAME + "/rest/v1/addresses";
+                method = "POST";
+            }
+        } catch (JSONException e) {
+            callback.onFailure(new IOException("JSON error"));
+            return;
+        }
+
+        RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
+
+        Request request = new Request.Builder()
+                .url(url)
+                .header("apikey", API_KEY)
+                .header("Authorization", DataBinding.getBearerToken())
+                .header("Prefer", "return=representation")
+                .method(method, body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse(response.body().string());
+                } else {
+                    callback.onFailure(new IOException("Server error: " + response.code()));
+                }
+            }
+        });
+    }
+
+    public void resetDefaultAddress(String userId, SBC_Callback callback) {
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("is_default", false);
+        } catch (JSONException e) {
+            callback.onFailure(new IOException("JSON error"));
+            return;
+        }
+
+        RequestBody body = RequestBody.create(
+                jsonBody.toString(),
+                MediaType.parse("application/json")
+        );
+
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + "/rest/v1/addresses?user_id=eq." + userId)
+                .header("apikey", API_KEY)
+                .header("Authorization", DataBinding.getBearerToken())
+                .header("Prefer", "return=minimal")
+                .patch(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse("Success");
+                } else {
+                    callback.onFailure(new IOException(
+                            "Reset default error: " + response.code() + " - " + response.body().string()
+                    ));
+                }
+            }
+        });
+    }
+
+    public void deleteAddress(String addressId, SBC_Callback callback) {
+        String url = DOMAIN_NAME + "/rest/v1/addresses?id=eq." + addressId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .header("apikey", API_KEY)
+                .header("Authorization", DataBinding.getBearerToken())
+                .header("Prefer", "return=minimal")
+                .delete()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse("Success");
+                } else {
+                    callback.onFailure(new IOException(
+                            "Delete error: " + response.code() + " - " + response.body().string()
+                    ));
+                }
+            }
+        });
+    }
+
+    public void getUserPaymentMethods(SBC_Callback callback) {
+        String userId = DataBinding.getUuidUser();
+        String url = DOMAIN_NAME + "/rest/v1/payment_methods?user_id=eq." + userId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .header("apikey", API_KEY)
+                .header("Authorization", DataBinding.getBearerToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse(response.body().string());
+                } else {
+                    callback.onFailure(new IOException("Server error: " + response.code()));
+                }
+            }
+        });
+    }
+
+    public void savePaymentMethod(PaymentMethod paymentMethod, SBC_Callback callback) {
+        String url;
+        String method;
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("user_id", paymentMethod.getUserId());
+            jsonBody.put("card_last4", paymentMethod.getCardLast4());
+            jsonBody.put("card_exp_month", paymentMethod.getCardExpMonth());
+            jsonBody.put("card_exp_year", paymentMethod.getCardExpYear());
+            jsonBody.put("cardholder_name", paymentMethod.getCardholderName());
+            jsonBody.put("card_brand", paymentMethod.getCardBrand());
+            jsonBody.put("is_default", paymentMethod.isDefault());
+
+            if (paymentMethod.getId() != null && !paymentMethod.getId().isEmpty()) {
+                url = DOMAIN_NAME + "/rest/v1/payment_methods?id=eq." + paymentMethod.getId();
+                method = "PATCH";
+            } else {
+                url = DOMAIN_NAME + "/rest/v1/payment_methods";
+                method = "POST";
+            }
+        } catch (JSONException e) {
+            callback.onFailure(new IOException("JSON error"));
+            return;
+        }
+
+        RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
+
+        Request request = new Request.Builder()
+                .url(url)
+                .header("apikey", API_KEY)
+                .header("Authorization", DataBinding.getBearerToken())
+                .header("Prefer", "return=minimal")
+                .method(method, body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse(response.body().string());
+                } else {
+                    callback.onFailure(new IOException("Save error: " + response.code()));
+                }
+            }
+        });
+    }
+
+    public void deletePaymentMethod(String paymentMethodId, SBC_Callback callback) {
+        String url = DOMAIN_NAME + "/rest/v1/payment_methods?id=eq." + paymentMethodId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .header("apikey", API_KEY)
+                .header("Authorization", DataBinding.getBearerToken())
+                .header("Prefer", "return=minimal")
+                .delete()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse("Success");
+                } else {
+                    callback.onFailure(new IOException("Delete error: " + response.code()));
+                }
+            }
+        });
+    }
+
+    public void resetDefaultPaymentMethod(String userId, SBC_Callback callback) {
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("is_default", false);
+        } catch (JSONException e) {
+            callback.onFailure(new IOException("JSON error"));
+            return;
+        }
+
+        RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
+
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + "/rest/v1/payment_methods?user_id=eq." + userId)
+                .header("apikey", API_KEY)
+                .header("Authorization", DataBinding.getBearerToken())
+                .header("Prefer", "return=minimal")
+                .patch(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse("Success");
+                } else {
+                    callback.onFailure(new IOException("Reset default error: " + response.code()));
+                }
+            }
+        });
+    }
+
+    // Метод для выхода пользователя
+    public void signOut(String accessToken, SBC_Callback callback) {
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + AUTH_PATH + "logout")
+                .post(RequestBody.create("", null)) // POST-запрос без тела
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + accessToken)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse(response.body().string());
+                } else {
+                    callback.onFailure(new IOException("Server error: " + response.code()));
+                }
+            }
+        });
+    }
+
 
     /*// Метод для обновления профиля пользователя
     public void updateUserProfile(String userId, String jsonPayload, SBC_Callback callback) {
