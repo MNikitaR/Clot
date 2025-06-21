@@ -44,8 +44,6 @@
     <string name="create_new_pin">Create your new PIN code</string>
     <string name="confirm_pin">Confirm your PIN code</string>
     <string name="otp_verification">OTP Verification</string>
-    <string name="please_check_your_email">Please check your email </string>
-    <string name="to_see"> to see the verification code</string>
     <string name="otp_code">OTP Code</string>
     <string name="verify">Verify</string>
     <string name="resend_code_to">Resend code to 1:50</string>
@@ -92,4 +90,18 @@
     <string name="set_as_default_payment_method">Set as default payment method</string>
     <string name="month">Month</string>
     <string name="year">Year</string>
+    <string name="categories">Categories</string>
+    <string name="see_all">See All</string>
+    <string name="top_selling">Top Selling</string>
+    <string name="popular_products">Popular Products</string>
+    <string name="search">Search</string>
+    <string-array name="gender_options">
+        <item>Men</item>
+        <item>Women</item>
+    </string-array>
+    <string name="wish">Add to wishlist</string>
+    <string name="shop_by_categories">Shop by Categories</string>
+    <string name="products">Products</string>
+    <string name="product_details">Product Details</string>
+    <string name="category">Category</string>
 </resources>

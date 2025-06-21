@@ -1,16 +1,12 @@
 package com.example.clot;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.example.clot.models.Address;
 import com.example.clot.models.LoginRequest;
 import com.example.clot.models.PaymentMethod;
-import com.example.clot.models.Profile;
 import com.example.clot.models.ProfileUpdate;
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,6 +35,8 @@ public class SupabaseClient {
     public static String API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlleGtxdmJ5YXFkaGJ1cnpxcGh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyMzY0MjIsImV4cCI6MjA2NTgxMjQyMn0.0HuekEOytqhI7Lj1JytIeUFAuV4ogx_Fk2FH8sDogD0";
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     public static final String STORAGE_AVATAR = DOMAIN_NAME + "storage/v1/object/public/avatars/";
+    public static final String STORAGE_CATEGORY = DOMAIN_NAME + "storage/v1/object/public/categoryimg/";
+    public static final String STORAGE_PRODUCT = DOMAIN_NAME + "storage/v1/object/public/productimg/";
 
     static OkHttpClient client = new OkHttpClient();
     private final Gson gson = new Gson();
@@ -713,6 +711,57 @@ public class SupabaseClient {
                     callback.onResponse(response.body().string());
                 } else {
                     callback.onFailure(new IOException("Server error: " + response.code()));
+                }
+            }
+        });
+    }
+
+    // Получение категорий
+    public void fetchCategories( SBC_Callback callback) {
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + REST_PATH + "categories?select=*")
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", DataBinding.getBearerToken())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    callback.onResponse(responseBody);
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера " + response));
+                }
+            }
+        });
+    }
+
+    // Получение товаров с изображениями
+    public void fetchProducts(SBC_Callback callback) {
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + REST_PATH + "products?select=*")
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", DataBinding.getBearerToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    callback.onResponse(responseBody);
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера " + response));
                 }
             }
         });

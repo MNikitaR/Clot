@@ -47,7 +47,7 @@ public class OtpVerificationFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_otp_verification, container, false);
 
         emailTextView = view.findViewById(R.id.tvEmail);
-        emailTextView.setText(R.string.please_check_your_email + email + R.string.to_see);
+        emailTextView.setText("Please check your email " + email + " to see the verification code");
 
         // Инициализация полей OTP
         otpInputs[0] = view.findViewById(R.id.otp1);
