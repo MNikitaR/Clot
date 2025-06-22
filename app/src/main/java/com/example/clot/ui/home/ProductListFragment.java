@@ -1,58 +1,112 @@
 package com.example.clot.ui.home;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.clot.R;
+import com.example.clot.SupabaseClient;
 import com.example.clot.models.Product;
+import com.example.clot.ui.home.adapters.ProductGridAdapter;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.List;
 
 public class ProductListFragment extends Fragment {
-
     private RecyclerView productsRecyclerView;
-    private String categoryId;
+    private String categoryId, categoryName;
+    private ImageButton btnBack;
+    private TextView tvCategoryName;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Получаем ID категории из аргументов
         if (getArguments() != null) {
             categoryId = getArguments().getString("category_id");
+            categoryName = getArguments().getString("category_name");
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_product_list, container, false);
+        return inflater.inflate(R.layout.fragment_product_list, container, false);
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         productsRecyclerView = view.findViewById(R.id.productsRecyclerView);
-        TextView categoryTitle = view.findViewById(R.id.categoryTitle);
+        productsRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 2)); // 2 колонки
+        btnBack = view.findViewById(R.id.btnBack);
+        tvCategoryName = view.findViewById(R.id.category_name);
 
-        productsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        tvCategoryName.setText(categoryName);
 
-        // Загрузка данных
-        loadProducts(categoryTitle);
-
-        return view;
+        // Загружаем товары категории
+        loadProductsByCategory();
+        btnBack.setOnClickListener(v -> navigateBack());
     }
 
-    private void loadProducts(TextView titleView) {
+    private void loadProductsByCategory() {
+        SupabaseClient supabaseClient = new SupabaseClient();
+        supabaseClient.fetchProductsByCategory(categoryId, new SupabaseClient.SBC_Callback() {
+            @Override
+            public void onFailure(IOException e) {
+                requireActivity().runOnUiThread(() -> {
+                    Log.e("loadCategories:onFailure", e.getLocalizedMessage());
+                });
+            }
 
+            @Override
+            public void onResponse(String responseBody) {
+                requireActivity().runOnUiThread(() -> {
+                    Log.e("loadCategories:onResponse", responseBody);
+                    Gson gson = new Gson();
+                    Type type = new TypeToken<List<Product>>(){}.getType();
+                    List<Product> productList = gson.fromJson(responseBody, type);
+                    Log.e("loadCategories:onResponse", productList.toString());
+                    ProductGridAdapter productGridAdapter = new ProductGridAdapter(requireContext(), productList);
+
+                    // Установка обработчика кликов
+                    productGridAdapter.setOnItemClickListener(product -> {
+                        // Создаем фрагмент детализации
+                        DetailFragment detailFragment = new DetailFragment();
+
+                        // Передаем данные через Bundle
+                        Bundle args = new Bundle();
+                        args.putInt("product_id", product.getId());
+                        detailFragment.setArguments(args);
+
+                        // Переход к фрагменту
+                        NavHostFragment.findNavController(ProductListFragment.this)
+                                .navigate(R.id.action_productListFragment_to_productDetailsFragment, args);
+                    });
+
+                    productsRecyclerView.setAdapter(productGridAdapter);
+                    productsRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 2));
+                });
+            }
+        });
     }
 
-    private void navigateToProductDetails(Product product) {
-       /* Bundle args = new Bundle();
-        args.putString("product_id", product.getId());
-
-        Navigation.findNavController(requireView())
-                .navigate(R.id.action_productListFragment_to_productDetailsFragment, args);*/
+    private void navigateBack() {
+        // Вернуться назад
+        NavHostFragment.findNavController(ProductListFragment.this).popBackStack();
     }
 }

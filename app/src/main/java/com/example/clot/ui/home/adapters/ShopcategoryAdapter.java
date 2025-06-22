@@ -20,10 +20,18 @@ import java.util.List;
 public class ShopcategoryAdapter extends RecyclerView.Adapter<ShopcategoryAdapter.ViewHolder> {
     private Context context;
     private List<Category> categories;
+    private OnCategoryClickListener listener;
 
-    public ShopcategoryAdapter(Context context, List<Category> categories) {
+    // Интерфейс для обработки кликов
+    public interface OnCategoryClickListener {
+        void onCategoryClick(Category category);
+    }
+
+    // Изменяем конструктор
+    public ShopcategoryAdapter(Context context, List<Category> categories, OnCategoryClickListener listener) {
         this.context = context;
         this.categories = categories;
+        this.listener = listener;
     }
 
     @NonNull
@@ -45,6 +53,13 @@ public class ShopcategoryAdapter extends RecyclerView.Adapter<ShopcategoryAdapte
                 .placeholder(R.drawable.error)
                 .error(R.drawable.error)
                 .into(holder.categoryImage);
+
+        // Обработчик клика
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onCategoryClick(category);
+            }
+        });
     }
 
     @Override

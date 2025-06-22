@@ -104,4 +104,8 @@
     <string name="products">Products</string>
     <string name="product_details">Product Details</string>
     <string name="category">Category</string>
+    <string name="gender">Gender</string>
+    <string name="shipping_amp_returns"><![CDATA[Shipping & Returns]]></string>
+    <string name="free_standard_shipping_and_free_60_day_returns">Free standard shipping and free 60-day returns</string>
+    <string name="reviews">Reviews</string>
 </resources>

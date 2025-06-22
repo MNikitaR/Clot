@@ -1,5 +1,7 @@
 package com.example.clot;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 
 import com.example.clot.models.Address;
@@ -13,6 +15,11 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -741,6 +748,31 @@ public class SupabaseClient {
         });
     }
 
+    // Получение гендер
+    public void fetchGenders( SBC_Callback callback) {
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + REST_PATH + "genders?select=*")
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", DataBinding.getBearerToken())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    callback.onResponse(responseBody);
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера " + response));
+                }
+            }
+        });
+    }
+
     // Получение товаров с изображениями
     public void fetchProducts(SBC_Callback callback) {
         Request request = new Request.Builder()
@@ -767,6 +799,215 @@ public class SupabaseClient {
         });
     }
 
+    public void searchProducts(String query,
+                              /* Set<String> colors,
+                               List<String> genders,
+                               double minPrice,
+                               double maxPrice,
+                               Set<String> sizes,*/
+                               SBC_Callback callback) {
+
+        new Thread(() -> {
+            try {
+                // Базовый URL с основными параметрами
+                String url = DOMAIN_NAME + REST_PATH + "products?select=*";
+
+                // Добавляем поиск по названию
+                if (!query.isEmpty()) {
+                    url += "&name=ilike.*" + URLEncoder.encode(query, "UTF-8") + "*";
+                }
+
+/*
+                // Для цветов
+                if (!colors.isEmpty()) {
+                    String colorList = colors.stream()
+                            .map(c -> "\"" + c + "\"")
+                            .collect(Collectors.joining(","));
+                    url += "&product_variants.color_id=in.(" + colorList + ")";
+                }
+
+                // Для размеров
+                if (!sizes.isEmpty()) {
+                    String sizeList = sizes.stream()
+                            .map(s -> "\"" + s + "\"")
+                            .collect(Collectors.joining(","));
+                    url += "&product_variants.size_id=in.(" + sizeList + ")";
+                }
+
+                // Фильтр по полу
+                if (!genders.isEmpty()) {
+                    // Формируем список гендеров в формате SQL
+                    String genderList = TextUtils.join(",",
+                            genders.stream().map(g -> "\"" + g + "\"").collect(Collectors.toList()));
+
+                    url += "&gender=in.(" + genderList + ")";
+                }
+
+                // Фильтр по цене
+                url += "&price=gte." + String.format(Locale.US, "2d", minPrice)
+                        + "&price=lte." + String.format(Locale.US, "2d", maxPrice);
+
+                // Фильтр по наличию товара
+                url += "&product_variants.stock=gt.0";
+*/
+
+                // Формируем запрос
+                Request request = new Request.Builder()
+                        .url(url)
+                        .addHeader("apikey", API_KEY)
+                        .addHeader("Authorization", DataBinding.getBearerToken())
+                        .build();
+
+                // Выполняем запрос
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        callback.onFailure(e);
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        if (response.isSuccessful()) {
+                            String responseBody = response.body().string();
+                            callback.onResponse(responseBody);
+                        } else {
+                            callback.onFailure(new IOException("Server error: " + response.code()));
+                        }
+                    }
+                });
+
+            } catch (Exception e) {
+                callback.onFailure(new IOException("URL build error: " + e.getMessage()));
+            }
+        }).start();
+    }
+
+    // Получение цвета
+    public void fetchColor(SBC_Callback callback) {
+        Request request = new Request.Builder()
+                .url("https://iexkqvbyaqdhburzqphy.supabase.co/rest/v1/colors?select=*")
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", DataBinding.getBearerToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    callback.onResponse(responseBody);
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера " + response));
+                }
+            }
+        });
+    }
+
+    // Получение размеров
+    public void fetchSizes(SBC_Callback callback) {
+        Request request = new Request.Builder()
+                .url("https://iexkqvbyaqdhburzqphy.supabase.co/rest/v1/sizes?select=*")
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", DataBinding.getBearerToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    callback.onResponse(responseBody);
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера " + response));
+                }
+            }
+        });
+    }
+
+    // Получение товаров по категории
+    public void fetchProductsByCategory(String categoryId, SBC_Callback callback) {
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + REST_PATH + "products?category_id=eq." + categoryId)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", "Bearer " + API_KEY)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse(response.body().string());
+                } else {
+                    callback.onFailure(new IOException("Server error: " + response.code()));
+                }
+            }
+        });
+    }
+
+    public static void getProductById(int id, SBC_Callback callback) {
+        String url = DOMAIN_NAME + REST_PATH + "products?select=*&id=eq." + id;
+        executeGetRequest(url, callback);
+    }
+
+    public static void getProductImages(int productId, SBC_Callback callback) {
+        String url = DOMAIN_NAME + REST_PATH + "product_images?select=*&product_id=eq." + productId;
+        executeGetRequest(url, callback);
+    }
+
+    public static void getProductVariants(int productId, SBC_Callback callback) {
+        String url = DOMAIN_NAME + REST_PATH + "product_variants?select=*&product_id=eq." + productId;
+        executeGetRequest(url, callback);
+    }
+
+/*    public static void getProductReviews(int productId, SBC_Callback callback) {
+        String url = DOMAIN_NAME + REST_PATH + "reviews?select=*&product_id=eq." + productId;
+        executeGetRequest(url, callback);
+    }*/
+
+    private static void executeGetRequest(String url, SBC_Callback callback) {
+        new Thread(() -> {
+            try {
+                Request request = new Request.Builder()
+                        .url(url)
+                        .addHeader("apikey", API_KEY)
+                        .addHeader("Authorization", DataBinding.getBearerToken())
+                        .build();
+
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        callback.onFailure(e);
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                        if (response.isSuccessful()) {
+                            callback.onResponse(response.body().string());
+                        } else {
+                            callback.onFailure(new IOException("Server error: " + response.code()));
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                callback.onFailure(new IOException("URL error: " + e.getMessage()));
+            }
+        }).start();
+    }
 
     /*// Метод для обновления профиля пользователя
     public void updateUserProfile(String userId, String jsonPayload, SBC_Callback callback) {

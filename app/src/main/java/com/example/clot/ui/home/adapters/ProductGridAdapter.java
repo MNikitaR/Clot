@@ -29,6 +29,16 @@ public class ProductGridAdapter extends RecyclerView.Adapter<ProductGridAdapter.
         this.products = products;
     }
 
+    private OnItemClickListener onItemClickListener;
+
+    public interface OnItemClickListener {
+        void onItemClick(Product product);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.onItemClickListener = listener;
+    }
+
     @NonNull
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -66,6 +76,13 @@ public class ProductGridAdapter extends RecyclerView.Adapter<ProductGridAdapter.
             product.setFavorite(newState);
             holder.btnFavorite.setSelected(newState);
 
+        });
+
+        // Обработка клика на весь элемент товара
+        holder.itemView.setOnClickListener(v -> {
+            if (onItemClickListener != null) {
+                onItemClickListener.onItemClick(product);
+            }
         });
     }
 

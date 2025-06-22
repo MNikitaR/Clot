@@ -76,7 +76,7 @@ public class CategoryFragment extends Fragment {
                     Type type = new TypeToken<List<Category>>(){}.getType();
                     List<Category> categoryList = gson.fromJson(responseBody, type);
                     Log.e("loadCategories:onResponse", categoryList.toString());
-                    ShopcategoryAdapter categoryAdapter = new ShopcategoryAdapter(requireContext(), categoryList);
+                    ShopcategoryAdapter categoryAdapter = new ShopcategoryAdapter(requireContext(), categoryList, CategoryFragment.this::navigateToProducts);
                     categoriesRecyclerView.setAdapter(categoryAdapter);
                     categoriesRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
                 });
@@ -87,5 +87,21 @@ public class CategoryFragment extends Fragment {
     private void navigateBack() {
         // Вернуться назад
         NavHostFragment.findNavController(CategoryFragment.this).popBackStack();
+    }
+
+    // Метод для перехода к товарам категории
+    private void navigateToProducts(Category category) {
+        // Создаем новый фрагмент с товарами
+        ProductListFragment fragment = new ProductListFragment();
+
+        // Передаем ID категории через аргументы
+        Bundle args = new Bundle();
+        args.putString("category_id", String.valueOf(category.getId()));
+        args.putString("category_name", category.getName());
+        fragment.setArguments(args);
+
+        // Выполняем переход
+        NavHostFragment.findNavController(CategoryFragment.this)
+                .navigate(R.id.action_categoryFragment_to_productListFragment, args);
     }
 }

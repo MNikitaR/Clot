@@ -12,38 +12,68 @@
         tools:layout="@layout/fragment_home">
 
         <action
-            android:id="@+id/action_homeFragment_to_productListFragment"
-            app:destination="@id/productListFragment"/>
-
-<!--        <action
             android:id="@+id/action_homeFragment_to_productDetailsFragment"
-            app:destination="@id/productDetailsFragment" />-->
+            app:destination="@id/productDetailsFragment" />
 
         <action
             android:id="@+id/action_homeFragment_to_categoryFragment"
             app:destination="@id/categoryFragment" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_productListFragment"
+            app:destination="@id/productListFragment" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/productListFragment"
         android:name="com.example.clot.ui.home.ProductListFragment"
-        android:label="@string/products">
+        android:label="@string/products"
+        tools:layout="@layout/fragment_product_list">
 
-<!--        <action
+        <action
             android:id="@+id/action_productListFragment_to_productDetailsFragment"
-            app:destination="@id/productDetailsFragment" />-->
+            app:destination="@id/productDetailsFragment" />
     </fragment>
 
-<!--    <fragment
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.clot.ui.home.SearchFragment"
+        android:label="Search"
+        tools:layout="@layout/fragment_search">
+
+        <action
+            android:id="@+id/action_searchFragment_to_categoryFragment"
+            app:destination="@id/categoryFragment" />
+
+        <action
+            android:id="@+id/action_searchFragment_to_productListFragment"
+            app:destination="@id/productListFragment" />
+
+        <action
+            android:id="@+id/action_searchFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment" />
+    </fragment>
+
+    <fragment
         android:id="@+id/productDetailsFragment"
-        android:name="com.example.clot.ui.home.ProductDetailsFragment"
-        android:label="@string/product_details"/>-->
+        android:name="com.example.clot.ui.home.DetailFragment"
+        android:label="@string/product_details"
+        tools:layout="@layout/fragment_product_details"/>
 
     <fragment
         android:id="@+id/categoryFragment"
         android:name="com.example.clot.ui.home.CategoryFragment"
         tools:layout="@layout/shop_by_category"
-        android:label="@string/shop_by_categories"/>
+        android:label="@string/shop_by_categories">
+
+        <action
+            android:id="@+id/action_categoryFragment_to_productListFragment"
+            app:destination="@id/productListFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_notifications"

@@ -29,6 +29,16 @@ public class ProductHorizontalAdapter extends RecyclerView.Adapter<ProductHorizo
         this.products = products;
     }
 
+    private ProductGridAdapter.OnItemClickListener onItemClickListener;
+
+    public interface OnItemClickListener {
+        void onItemClick(Product product);
+    }
+
+    public void setOnItemClickListener(ProductGridAdapter.OnItemClickListener listener) {
+        this.onItemClickListener = listener;
+    }
+
     @NonNull
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -60,12 +70,11 @@ public class ProductHorizontalAdapter extends RecyclerView.Adapter<ProductHorizo
         // Установка состояния сердечка
         holder.btnFavorite.setSelected(product.isFavorite());
 
-        // Обработчик клика
-        holder.btnFavorite.setOnClickListener(v -> {
-            boolean newState = !product.isFavorite();
-            product.setFavorite(newState);
-            holder.btnFavorite.setSelected(newState);
-
+        // Обработка клика на весь элемент товара
+        holder.itemView.setOnClickListener(v -> {
+            if (onItemClickListener != null) {
+                onItemClickListener.onItemClick(product);
+            }
         });
     }
 

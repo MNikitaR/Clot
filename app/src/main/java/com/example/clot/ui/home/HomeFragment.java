@@ -50,8 +50,6 @@ public class HomeFragment extends Fragment {
     private TextInputEditText etSearch;
     private String avatar_url;
 
-    private boolean isMenSelected = true;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -93,14 +91,10 @@ public class HomeFragment extends Fragment {
         btnProfile.setOnClickListener(v -> navigateToProfile());
 //        btnCart.setOnClickListener(v -> navigateToCart());
 
-/*        // Поиск
-        etSearch.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                performSearch();
-                return true;
-            }
-            return false;
-        });*/
+        // Поиск
+        etSearch.setOnClickListener(v -> {
+            navigateToSearch();
+        });
     }
 
     private void updateGenderSelector() {
@@ -154,12 +148,28 @@ public class HomeFragment extends Fragment {
                     Type type = new TypeToken<List<Category>>(){}.getType();
                     List<Category> categoryList = gson.fromJson(responseBody, type);
                     Log.e("loadCategories:onResponse", categoryList.toString());
-                    CategoryAdapter categoryAdapter = new CategoryAdapter(requireContext(), categoryList);
+                    CategoryAdapter categoryAdapter = new CategoryAdapter(requireContext(), categoryList, HomeFragment.this::navigateToProducts);
                     categoriesRecyclerView.setAdapter(categoryAdapter);
                     categoriesRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
                 });
             }
         });
+    }
+
+    // Метод для перехода к товарам категории
+    private void navigateToProducts(Category category) {
+        // Создаем новый фрагмент с товарами
+        ProductListFragment fragment = new ProductListFragment();
+
+        // Передаем ID категории через аргументы
+        Bundle args = new Bundle();
+        args.putString("category_id", String.valueOf(category.getId()));
+        args.putString("category_name", category.getName());
+        fragment.setArguments(args);
+
+        // Выполняем переход
+        NavHostFragment.findNavController(HomeFragment.this)
+                .navigate(R.id.action_homeFragment_to_productListFragment, args);
     }
 
     private void loadTopSellingProducts() {
@@ -180,9 +190,26 @@ public class HomeFragment extends Fragment {
                 requireActivity().runOnUiThread(() -> {
                     Log.e("loadTopSellingProducts:onResponse", responseBody);
                     Gson gson = new Gson();
-                    Type type = new TypeToken<List<Product>>(){}.getType();
+                    Type type = new TypeToken<List<Product>>() {
+                    }.getType();
                     List<Product> productList = gson.fromJson(responseBody, type);
                     ProductHorizontalAdapter productHorizontalAdapter = new ProductHorizontalAdapter(requireContext(), productList);
+
+                    // Установка обработчика кликов
+                    productHorizontalAdapter.setOnItemClickListener(product -> {
+                        // Создаем фрагмент детализации
+                        DetailFragment detailFragment = new DetailFragment();
+
+                        // Передаем данные через Bundle
+                        Bundle args = new Bundle();
+                        args.putInt("product_id", product.getId());
+                        detailFragment.setArguments(args);
+
+                        // Переход к фрагменту
+                        NavHostFragment.findNavController(HomeFragment.this)
+                                .navigate(R.id.action_homeFragment_to_productDetailsFragment, args);
+                    });
+
                     topSellingRecyclerView.setAdapter(productHorizontalAdapter);
                     topSellingRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
                 });
@@ -211,6 +238,22 @@ public class HomeFragment extends Fragment {
                     Type type = new TypeToken<List<Product>>(){}.getType();
                     List<Product> productList = gson.fromJson(responseBody, type);
                     ProductGridAdapter productGridAdapter = new ProductGridAdapter(getActivity().getApplicationContext(), productList);
+
+                    // Установка обработчика кликов
+                    productGridAdapter.setOnItemClickListener(product -> {
+                        // Создаем фрагмент детализации
+                        DetailFragment detailFragment = new DetailFragment();
+
+                        // Передаем данные через Bundle
+                        Bundle args = new Bundle();
+                        args.putInt("product_id", product.getId());
+                        detailFragment.setArguments(args);
+
+                        // Переход к фрагменту
+                        NavHostFragment.findNavController(HomeFragment.this)
+                                .navigate(R.id.action_homeFragment_to_productDetailsFragment, args);
+                    });
+
                     popularProductsRecyclerView.setAdapter(productGridAdapter);
                     popularProductsRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 2));
                 });
@@ -297,18 +340,12 @@ public class HomeFragment extends Fragment {
         bottomNav.setSelectedItemId(R.id.navigation_profile);
     }
 
-/*    private void performSearch() {
-        String query = etSearch.getText().toString().trim();
-        if (!query.isEmpty()) {
-            // Переход к результатам поиска
-            Bundle args = new Bundle();
-            args.putString("search_query", query);
-            Navigation.findNavController(requireView())
-                    .navigate(R.id.action_homeFragment_to_searchResultsFragment, args);
-        }
+    private void navigateToSearch() {
+        NavHostFragment.findNavController(HomeFragment.this)
+                .navigate(R.id.action_homeFragment_to_searchFragment);
     }
 
-    private void navigateToCart() {
+/*     private void navigateToCart() {
         Navigation.findNavController(requireView())
                 .navigate(R.id.action_homeFragment_to_cartFragment);
     }*/
