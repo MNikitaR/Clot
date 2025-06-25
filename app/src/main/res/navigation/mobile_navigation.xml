@@ -97,12 +97,28 @@
             app:destination="@id/editProfileFragment" />
 
         <action
+            android:id="@+id/action_profileFragment_to_wishlist"
+            app:destination="@id/wishlistFragment" />
+
+        <action
             android:id="@+id/action_profileFragment_to_addressFragment"
             app:destination="@id/addressFragment" />
 
         <action
             android:id="@+id/action_profileFragment_to_paymentMethods"
             app:destination="@id/paymentMethodFragment" />
+    </fragment>
+
+    <!-- Экран wishlist -->
+    <fragment
+        android:id="@+id/wishlistFragment"
+        android:name="com.example.clot.ui.profile.wishlist.WishlistFragment"
+        android:label="Wishlist"
+        tools:layout="@layout/wishlist">
+
+        <action
+            android:id="@+id/action_wishlist_to_details"
+            app:destination="@id/productDetailsFragment" />
     </fragment>
 
     <!-- Экран редактирования профиля -->

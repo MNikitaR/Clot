@@ -108,4 +108,8 @@
     <string name="shipping_amp_returns"><![CDATA[Shipping & Returns]]></string>
     <string name="free_standard_shipping_and_free_60_day_returns">Free standard shipping and free 60-day returns</string>
     <string name="reviews">Reviews</string>
+    <string name="added_to_wishlist">Добавлено в избранное!</string>
+    <string name="removed_from_wishlist">Удалено из избранного</string>
+    <string name="wishlist_add_error">Ошибка добавления в избранное</string>
+    <string name="wishlist_remove_error">Ошибка удаления из избранного</string>
 </resources>

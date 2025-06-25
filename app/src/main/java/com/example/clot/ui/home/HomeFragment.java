@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.clot.DataBinding;
 import com.example.clot.R;
 import com.example.clot.SupabaseClient;
 import com.example.clot.models.Category;
@@ -34,6 +35,9 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -46,7 +50,7 @@ public class HomeFragment extends Fragment {
     private Button btnSeeAllCategories;
     private Spinner spiner;
     private ImageButton btnProfile;
-    private ImageButton btnCart;
+//    private ImageButton btnCart;
     private TextInputEditText etSearch;
     private String avatar_url;
 
@@ -67,7 +71,6 @@ public class HomeFragment extends Fragment {
         btnSeeAllCategories = view.findViewById(R.id.btnSeeAllCategories);
         btnProfile = view.findViewById(R.id.btnProfile);
         spiner = view.findViewById(R.id.genderSpinner);
-        btnCart = view.findViewById(R.id.btnCart);
         etSearch = view.findViewById(R.id.etSearch);
 
         // Загрузка данных
@@ -89,8 +92,6 @@ public class HomeFragment extends Fragment {
 
         // Кнопки навигации
         btnProfile.setOnClickListener(v -> navigateToProfile());
-//        btnCart.setOnClickListener(v -> navigateToCart());
-
         // Поиск
         etSearch.setOnClickListener(v -> {
             navigateToSearch();
@@ -116,8 +117,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedGender = parent.getItemAtPosition(position).toString();
-/*                // Ваши действия при выборе
-                filterProductsByGender(selectedGender);*/
+                // Действия при выборе
             }
 
             @Override
@@ -210,6 +210,76 @@ public class HomeFragment extends Fragment {
                                 .navigate(R.id.action_homeFragment_to_productDetailsFragment, args);
                     });
 
+                    // Добавляем обработчик избранного
+                    productHorizontalAdapter.setOnFavoriteClickListener((product, isFavorite) -> {
+                        if (isFavorite) {
+                            SupabaseClient supabaseClient = new SupabaseClient();
+                            supabaseClient.checkInWishlist(DataBinding.getUuidUser(), product.getId(),
+                                    new SupabaseClient.SBC_Callback() {
+                                        @Override
+                                        public void onFailure(IOException e) {
+                                            requireActivity().runOnUiThread(() -> {
+                                                Toast.makeText(requireContext(), "Ошибка проверки избранного",
+                                                        Toast.LENGTH_SHORT).show();
+                                            });
+                                        }
+
+                                        @Override
+                                        public void onResponse(String responseBody) {
+                                            requireActivity().runOnUiThread(() -> {
+                                                try {
+                                                    JSONArray jsonArray = new JSONArray(responseBody);
+                                                    if (jsonArray.length() > 0) {
+                                                        // Товар уже в избранном
+                                                        Toast.makeText(requireContext(),
+                                                                "Товар уже в избранном",
+                                                                Toast.LENGTH_SHORT).show();
+
+                                                        // Сбрасываем состояние сердечка
+                                                        int position = productHorizontalAdapter.getPositionForProduct(product);
+                                                        if (position != -1) {
+                                                            product.setFavorite(false);
+                                                            productHorizontalAdapter.notifyItemChanged(position);
+                                                        }
+                                                    } else {
+                                                        // Добавляем товар
+                                                        supabaseClient.addToWishlist(DataBinding.getUuidUser(), product.getId(),
+                                                                new SupabaseClient.SBC_Callback() {
+                                                                    @Override
+                                                                    public void onFailure(IOException e) {
+                                                                        requireActivity().runOnUiThread(() -> {
+                                                                            Toast.makeText(requireContext(), "Ошибка добавления в избранное",
+                                                                                    Toast.LENGTH_SHORT).show();
+
+                                                                            // Сбрасываем состояние сердечка при ошибке
+                                                                            int position = productHorizontalAdapter.getPositionForProduct(product);
+                                                                            if (position != -1) {
+                                                                                product.setFavorite(false);
+                                                                                productHorizontalAdapter.notifyItemChanged(position);
+                                                                            }
+                                                                        });
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onResponse(String responseBody) {
+                                                                        requireActivity().runOnUiThread(() ->
+                                                                                Toast.makeText(requireContext(), "Добавлено в избранное!",
+                                                                                        Toast.LENGTH_SHORT).show()
+                                                                        );
+                                                                    }
+                                                                });
+                                                    }
+                                                } catch (JSONException e) {
+                                                    Toast.makeText(requireContext(),
+                                                            "Ошибка обработки данных",
+                                                            Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                        }
+                                    });
+                        }
+                    });
+
                     topSellingRecyclerView.setAdapter(productHorizontalAdapter);
                     topSellingRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
                 });
@@ -252,6 +322,76 @@ public class HomeFragment extends Fragment {
                         // Переход к фрагменту
                         NavHostFragment.findNavController(HomeFragment.this)
                                 .navigate(R.id.action_homeFragment_to_productDetailsFragment, args);
+                    });
+
+                    productGridAdapter.setOnFavoriteClickListener((product, isFavorite) -> {
+
+                        if (isFavorite) {
+                            // Проверка наличия товара в избранном
+                            supabaseClient.checkInWishlist(DataBinding.getUuidUser(), product.getId(),
+                                    new SupabaseClient.SBC_Callback() {
+                                        @Override
+                                        public void onFailure(IOException e) {
+                                            requireActivity().runOnUiThread(() ->
+                                                    Toast.makeText(requireContext(), "Ошибка проверки избранного",
+                                                            Toast.LENGTH_SHORT).show()
+                                            );
+                                        }
+
+                                        @Override
+                                        public void onResponse(String responseBody) {
+                                            requireActivity().runOnUiThread(() -> {
+                                                try {
+                                                    JSONArray jsonArray = new JSONArray(responseBody);
+                                                    if (jsonArray.length() > 0) {
+                                                        // Товар уже в избранном
+                                                        Toast.makeText(requireContext(),
+                                                                "Товар уже в избранном",
+                                                                Toast.LENGTH_SHORT).show();
+
+                                                        // Сбрасываем состояние сердечка
+                                                        int position = productGridAdapter.getPositionForProduct(product);
+                                                        if (position != -1) {
+                                                            product.setFavorite(false);
+                                                            productGridAdapter.notifyItemChanged(position);
+                                                        }
+                                                    } else {
+                                                        // Добавляем товар
+                                                        supabaseClient.addToWishlist(DataBinding.getUuidUser(), product.getId(),
+                                                                new SupabaseClient.SBC_Callback() {
+                                                                    @Override
+                                                                    public void onFailure(IOException e) {
+                                                                        requireActivity().runOnUiThread(() -> {
+                                                                            Toast.makeText(requireContext(), "Ошибка добавления в избранное",
+                                                                                    Toast.LENGTH_SHORT).show();
+
+                                                                            // Сбрасываем состояние сердечка при ошибке
+                                                                            int position = productGridAdapter.getPositionForProduct(product);
+                                                                            if (position != -1) {
+                                                                                product.setFavorite(false);
+                                                                                productGridAdapter.notifyItemChanged(position);
+                                                                            }
+                                                                        });
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onResponse(String responseBody) {
+                                                                        requireActivity().runOnUiThread(() ->
+                                                                                Toast.makeText(requireContext(), "Добавлено в избранное!",
+                                                                                        Toast.LENGTH_SHORT).show()
+                                                                        );
+                                                                    }
+                                                                });
+                                                    }
+                                                } catch (JSONException e) {
+                                                    Toast.makeText(requireContext(),
+                                                            "Ошибка обработки данных",
+                                                            Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                        }
+                                    });
+                        }
                     });
 
                     popularProductsRecyclerView.setAdapter(productGridAdapter);
@@ -344,9 +484,4 @@ public class HomeFragment extends Fragment {
         NavHostFragment.findNavController(HomeFragment.this)
                 .navigate(R.id.action_homeFragment_to_searchFragment);
     }
-
-/*     private void navigateToCart() {
-        Navigation.findNavController(requireView())
-                .navigate(R.id.action_homeFragment_to_cartFragment);
-    }*/
 }

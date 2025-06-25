@@ -1,13 +1,13 @@
 package com.example.clot.models;
 
 public class Product{
-    public int id;
-    public String name;
-    public String description;
-    public double price;
-    public int category_id;
-    public int stock_quantity;
-    public String primaryImageUrl;
+    private int id;
+    private String name;
+    private String description;
+    private double price;
+    private int category_id;
+    private int stock_quantity;
+    private String primaryImageUrl;
     private boolean isFavorite;
 
     public Product(int id, String name, String description, double price, int category_id, int stock_quantity, String primaryImageUrl) {

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,12 +16,16 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.clot.DataBinding;
 import com.example.clot.R;
 import com.example.clot.SupabaseClient;
 import com.example.clot.models.Product;
 import com.example.clot.ui.home.adapters.ProductGridAdapter;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -96,6 +101,76 @@ public class ProductListFragment extends Fragment {
                         // Переход к фрагменту
                         NavHostFragment.findNavController(ProductListFragment.this)
                                 .navigate(R.id.action_productListFragment_to_productDetailsFragment, args);
+                    });
+
+                    productGridAdapter.setOnFavoriteClickListener((product, isFavorite) -> {
+
+                        if (isFavorite) {
+                            // Проверка наличия товара в избранном
+                            supabaseClient.checkInWishlist(DataBinding.getUuidUser(), product.getId(),
+                                    new SupabaseClient.SBC_Callback() {
+                                        @Override
+                                        public void onFailure(IOException e) {
+                                            requireActivity().runOnUiThread(() ->
+                                                    Toast.makeText(requireContext(), "Ошибка проверки избранного",
+                                                            Toast.LENGTH_SHORT).show()
+                                            );
+                                        }
+
+                                        @Override
+                                        public void onResponse(String responseBody) {
+                                            requireActivity().runOnUiThread(() -> {
+                                                try {
+                                                    JSONArray jsonArray = new JSONArray(responseBody);
+                                                    if (jsonArray.length() > 0) {
+                                                        // Товар уже в избранном
+                                                        Toast.makeText(requireContext(),
+                                                                "Товар уже в избранном",
+                                                                Toast.LENGTH_SHORT).show();
+
+                                                        // Сбрасываем состояние сердечка
+                                                        int position = productGridAdapter.getPositionForProduct(product);
+                                                        if (position != -1) {
+                                                            product.setFavorite(false);
+                                                            productGridAdapter.notifyItemChanged(position);
+                                                        }
+                                                    } else {
+                                                        // Добавляем товар
+                                                        supabaseClient.addToWishlist(DataBinding.getUuidUser(), product.getId(),
+                                                                new SupabaseClient.SBC_Callback() {
+                                                                    @Override
+                                                                    public void onFailure(IOException e) {
+                                                                        requireActivity().runOnUiThread(() -> {
+                                                                            Toast.makeText(requireContext(), "Ошибка добавления в избранное",
+                                                                                    Toast.LENGTH_SHORT).show();
+
+                                                                            // Сбрасываем состояние сердечка при ошибке
+                                                                            int position = productGridAdapter.getPositionForProduct(product);
+                                                                            if (position != -1) {
+                                                                                product.setFavorite(false);
+                                                                                productGridAdapter.notifyItemChanged(position);
+                                                                            }
+                                                                        });
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onResponse(String responseBody) {
+                                                                        requireActivity().runOnUiThread(() ->
+                                                                                Toast.makeText(requireContext(), "Добавлено в избранное!",
+                                                                                        Toast.LENGTH_SHORT).show()
+                                                                        );
+                                                                    }
+                                                                });
+                                                    }
+                                                } catch (JSONException e) {
+                                                    Toast.makeText(requireContext(),
+                                                            "Ошибка обработки данных",
+                                                            Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                        }
+                                    });
+                        }
                     });
 
                     productsRecyclerView.setAdapter(productGridAdapter);

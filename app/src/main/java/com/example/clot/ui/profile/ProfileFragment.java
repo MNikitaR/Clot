@@ -134,12 +134,16 @@ public class ProfileFragment extends Fragment {
                     .navigate(R.id.action_profileFragment_to_paymentMethods);
         });
 
+        view.findViewById(R.id.btnWishlist).setOnClickListener(v -> {
+            NavHostFragment.findNavController(ProfileFragment.this)
+                    .navigate(R.id.action_profileFragment_to_wishlist);
+        });
+
         //Кнопка выхода
         btnSignOut.setOnClickListener(v -> signOutUser());
 
         /*
-        view.findViewById(R.id.btnCart).setOnClickListener(v -> navigateTo(CartFragment.class));
-        view.findViewById(R.id.btnWishlist).setOnClickListener(v -> navigateTo(WishlistFragment.class));*/
+        view.findViewById(R.id.btnCart).setOnClickListener(v -> navigateTo(CartFragment.class));*/
     }
 
     // Обработка обратного вызова

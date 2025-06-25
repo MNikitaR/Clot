@@ -30,13 +30,31 @@ public class ProductGridAdapter extends RecyclerView.Adapter<ProductGridAdapter.
     }
 
     private OnItemClickListener onItemClickListener;
+    private OnFavoriteClickListener onFavoriteClickListener;
 
     public interface OnItemClickListener {
         void onItemClick(Product product);
     }
 
+    public interface OnFavoriteClickListener {
+        void onFavoriteClick(Product product, boolean isFavorite);
+    }
+
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.onItemClickListener = listener;
+    }
+
+    public void setOnFavoriteClickListener(OnFavoriteClickListener listener) {
+        this.onFavoriteClickListener = listener;
+    }
+
+    public int getPositionForProduct(Product product) {
+        for (int i = 0; i < products.size(); i++) {
+            if (products.get(i).getId() == product.getId()) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @NonNull
@@ -70,12 +88,14 @@ public class ProductGridAdapter extends RecyclerView.Adapter<ProductGridAdapter.
         // Установка состояния сердечка
         holder.btnFavorite.setSelected(product.isFavorite());
 
-        // Обработчик клика
+        // Обработчик клика на сердечко
         holder.btnFavorite.setOnClickListener(v -> {
-            boolean newState = !product.isFavorite();
-            product.setFavorite(newState);
-            holder.btnFavorite.setSelected(newState);
+            product.setFavorite(true);
+            holder.btnFavorite.setSelected(true);
 
+            if (onFavoriteClickListener != null) {
+                onFavoriteClickListener.onFavoriteClick(product, true);
+            }
         });
 
         // Обработка клика на весь элемент товара

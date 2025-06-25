@@ -1,7 +1,5 @@
 package com.example.clot;
 
-import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 
 import com.example.clot.models.Address;
@@ -16,10 +14,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -980,33 +974,154 @@ public class SupabaseClient {
     }*/
 
     private static void executeGetRequest(String url, SBC_Callback callback) {
-        new Thread(() -> {
-            try {
-                Request request = new Request.Builder()
-                        .url(url)
-                        .addHeader("apikey", API_KEY)
-                        .addHeader("Authorization", DataBinding.getBearerToken())
-                        .build();
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", DataBinding.getBearerToken())
+                .build();
 
-                client.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                        callback.onFailure(e);
-                    }
-
-                    @Override
-                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                        if (response.isSuccessful()) {
-                            callback.onResponse(response.body().string());
-                        } else {
-                            callback.onFailure(new IOException("Server error: " + response.code()));
-                        }
-                    }
-                });
-            } catch (Exception e) {
-                callback.onFailure(new IOException("URL error: " + e.getMessage()));
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
             }
-        }).start();
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse(response.body().string());
+                } else {
+                    callback.onFailure(new IOException("Server error: " + response.code()));
+                }
+            }
+        });
+    }
+
+    // Добавление товара в избранное
+    public void addToWishlist(String userId, int productId, SBC_Callback callback) {
+
+        JSONObject json = new JSONObject();
+        try {
+            json.put("user_id", userId);
+            json.put("product_id", productId);
+        } catch (JSONException e) {
+            callback.onFailure(new IOException("JSON error"));
+            return;
+        }
+
+        RequestBody body = RequestBody.create(
+                json.toString(),
+                MediaType.parse("application/json")
+        );
+
+        Request request = new Request.Builder()
+                .url(DOMAIN_NAME + REST_PATH + "wishlist")
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", DataBinding.getBearerToken())
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=minimal")
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    callback.onFailure(new IOException("Ошибка сервера: " + response.code()));
+                } else {
+                    callback.onResponse("");
+                }
+            }
+        });
+    }
+
+    // Удаление товара из избранного
+    public void removeFromWishlist(String userId, int productId, SBC_Callback callback) {
+        String url = DOMAIN_NAME + REST_PATH + "wishlist?user_id=eq." + userId + "&product_id=eq." + productId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", DataBinding.getBearerToken())
+                .addHeader("Prefer", "return=minimal")
+                .delete()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    callback.onFailure(new IOException("Ошибка сервера: " + response.code()));
+                } else {
+                    callback.onResponse("");
+                }
+            }
+        });
+    }
+
+    // Получение избранных товаров с JOIN к таблице продуктов
+    public void fetchWishlistProducts(String userId, SBC_Callback callback) {
+        String url = DOMAIN_NAME + REST_PATH + "wishlist?select=product_id,products(*)&user_id=eq." + userId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", DataBinding.getBearerToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onResponse(response.body().string());
+                } else {
+                    callback.onFailure(new IOException("Ошибка сервера: " + response.code()));
+                }
+
+            }
+        });
+    }
+
+    public void checkInWishlist(String userId, int productId, SBC_Callback callback) {
+        String url = DOMAIN_NAME + REST_PATH + "wishlist?user_id=eq." + userId + "&product_id=eq." + productId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", API_KEY)
+                .addHeader("Authorization", DataBinding.getBearerToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    callback.onResponse(responseBody);
+                } else {
+                    callback.onFailure(new IOException("Server error: " + response.code()));
+                }
+            }
+        });
     }
 
     /*// Метод для обновления профиля пользователя
